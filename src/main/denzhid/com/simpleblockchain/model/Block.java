@@ -5,9 +5,9 @@ public class Block {
     private final String previousHash;
     private final String data;
     private String hash;
-    private String nonce;
+    private long nonce;
 
-    public Block(long index, String previousHash, String data, String hash, String nonce) {
+    public Block(long index, String previousHash, String data, String hash, long nonce) {
         this.index = index;
         this.previousHash = previousHash;
         this.data = data;
@@ -31,15 +31,7 @@ public class Block {
         return hash;
     }
 
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
-
-    public String getNonce() {
+    public long getNonce() {
         return nonce;
-    }
-
-    public void setNonce(String nonce) {
-        this.nonce = nonce;
     }
 }
