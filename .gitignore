@@ -1,4 +1,11 @@
+# Intelij idea files
+.idea
+
+# Gradle files
+.gradle
+
 # Compiled class file
+build
 *.class
 
 # Log file
