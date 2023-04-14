@@ -1,4 +1,4 @@
-package main.denzhid.com.simpleblockchain.model;
+package main.denzhid.com.simpleblockchain.model.block;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -9,7 +9,7 @@ public class BlockFactory {
     private static final Random RANDOMIZER = new Random();
     private static final String ALGORITHM = "SHA-256";
 
-    public static Block generateBlock(long index, String previousHash) throws NoSuchAlgorithmException {
+    public Block generateBlock(long index, String previousHash) throws NoSuchAlgorithmException {
         long nonce = 0L;
         String data = generateRandomString();
 
@@ -21,13 +21,13 @@ public class BlockFactory {
         return new Block(index, previousHash, data, hash, nonce);
     }
 
-    private static String generateRandomString() {
+    private String generateRandomString() {
         byte[] array = new byte[256];
         RANDOMIZER.nextBytes(array);
         return new String(array, StandardCharsets.UTF_8);
     }
 
-    private static String countHash(
+    private String countHash(
             long index,
             String previousHash,
             String data,
@@ -38,7 +38,7 @@ public class BlockFactory {
         );
     }
 
-    private static String bytesToHexConverter(byte[] hash) {
+    private String bytesToHexConverter(byte[] hash) {
         StringBuilder hexString = new StringBuilder(2 * hash.length);
         for (byte b : hash) {
             String hex = Integer.toHexString(0xff & b);
