@@ -8,9 +8,14 @@ public class Main {
         Server secondNode = new Server(hostsMock[1], new int[]{hostsMock[0], hostsMock[2]});
         Server thirdNode = new Server(hostsMock[2], new int[]{hostsMock[0], hostsMock[1]});
 
-        firstNode.generateFirstBlock();
         firstNode.start();
         secondNode.start();
         thirdNode.start();
+
+        firstNode.sendBlock();
+
+        firstNode.startMine();
+        secondNode.startMine();
+        thirdNode.startMine();
     }
 }
