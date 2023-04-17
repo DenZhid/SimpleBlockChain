@@ -1,8 +1,8 @@
 # SimpleBlockChain
 
-Main: ![badge](https://github.com/DenZhid/SimpleBlockChain/blob/develop/.github/workflows/tests.yml/badge.svg?branch=main)
+Main: ![badge](https://github.com/DenZhid/SimpleBlockChain/actions/workflows/tests.yml/badge.svg?branch=main)
 
-Develop:  ![badge](https://github.com/DenZhid/SimpleBlockChain/blob/develop/.github/workflows/tests.yml/badge.svg?branch=develop)
+Develop:  ![badge](https://github.com/DenZhid/SimpleBlockChain/actions/workflows/tests.yml/badge.svg?branch=develop)
 
 ### Запуск
 
