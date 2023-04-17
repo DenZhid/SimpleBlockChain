@@ -7,7 +7,7 @@ public record Block(int index, String previousHash, String data, String hash, lo
     @Override
     public String toString() {
         return "[index: " + index + " "
-                + "previousHash:  " + previousHash + " "
+                + "previousHash: " + previousHash + " "
                 + "hash: " + hash + " "
                 + "nonce: " + nonce + "]";
     }
