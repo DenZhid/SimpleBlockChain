@@ -47,7 +47,7 @@ public class MinerService {
 
         Block previousBlock = chain.get(chain.size() - 1);
 
-        if (previousBlock.index() < block.index()) {
+        if (previousBlock.index() + 1 < block.index()) {
             if (isLagging.get()) {
                 return ValidateResults.IGNORED;
             }
