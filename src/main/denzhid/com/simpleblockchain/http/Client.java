@@ -10,14 +10,14 @@ import java.net.Socket;
 import java.util.List;
 
 public class Client extends Thread {
-    private final int currentPort;
+    private final String currentNodeAddress;
     private final MinerService minerService;
     private final Server currentServer;
     private final Socket clientSocket;
 
-    public Client(int currentPort, MinerService minerService, Server currentServer, Socket clientSocket) {
-        super("Node " + currentPort + ": " + " Client Thread");
-        this.currentPort = currentPort;
+    public Client(String currentNodeAddress, MinerService minerService, Server currentServer, Socket clientSocket) {
+        super("Node " + currentNodeAddress + ": " + " Client Thread");
+        this.currentNodeAddress = currentNodeAddress;
         this.minerService = minerService;
         this.currentServer = currentServer;
         this.clientSocket = clientSocket;
@@ -34,12 +34,12 @@ public class Client extends Thread {
 
                     case GET -> {
                         minerService.setStopMining(true);
-                        currentServer.sendChain(request.getSenderPort());
+                        currentServer.sendChain(request.getSenderAddress());
                         System.out.println("Node "
-                                + currentPort
+                                + currentNodeAddress
                                 + ": "
                                 + "Send chain part to Node "
-                                + request.getSenderPort()
+                                + request.getSenderAddress()
                         );
                         minerService.setStopMining(false);
                     }
@@ -51,16 +51,17 @@ public class Client extends Thread {
                             // POST BLOCK
                             Block block = body.get(0);
                             System.out.println("Node "
-                                    + currentPort
+                                    + currentNodeAddress
                                     + ": "
                                     + "Received block: "
                                     + block
                                     + " from Node "
-                                    + request.getSenderPort());
+                                    + request.getSenderAddress());
                             switch (minerService.validateBlock(block)) {
-                                case ADDED -> System.out.println("Node " + currentPort + ": " + "Added block");
-                                case IGNORED -> System.out.println("Node " + currentPort + ": " + "Ignored block");
-                                case NEED_CHAIN -> currentServer.askForChainPart(request.getSenderPort());
+                                case ADDED -> System.out.println("Node " + currentNodeAddress + ": " + "Added block");
+                                case IGNORED ->
+                                        System.out.println("Node " + currentNodeAddress + ": " + "Ignored block");
+                                case NEED_CHAIN -> currentServer.askForChainPart(request.getSenderAddress());
                             }
                             minerService.setStopMining(false);
                             return;
@@ -71,10 +72,10 @@ public class Client extends Thread {
                         minerService.setChain(body);
                         minerService.setIsLagging(false);
                         System.out.println("Node "
-                                + currentPort
+                                + currentNodeAddress
                                 + ": "
                                 + "Received chain part" + " from Node "
-                                + request.getSenderPort());
+                                + request.getSenderAddress());
                         minerService.setStopMining(false);
                     }
                 }

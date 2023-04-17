@@ -12,19 +12,19 @@ import java.net.Socket;
 import java.util.List;
 
 public class Server extends Thread {
-    private static final String ADDRESS = "localhost";
-    private final int currentPort;
-    private final int[] otherPorts;
+    private final String currentNodeAddress;
+    private final String[] otherNodesInCluster;
     private final MinerService minerService;
     private ServerSocket serverSocket;
 
-    public Server(int currentPort, int[] otherPorts) {
-        this.currentPort = currentPort;
-        this.otherPorts = otherPorts;
+    public Server(String currentNodeAddress, String[] otherNodesInCluster) {
+        this.currentNodeAddress = currentNodeAddress;
+        this.otherNodesInCluster = otherNodesInCluster;
         this.minerService = new MinerService();
         try {
-            this.serverSocket = new ServerSocket(currentPort);
-            System.out.println("Node " + currentPort + ": " + "Started");
+            String[] addressParts = divideAddress(currentNodeAddress);
+            this.serverSocket = new ServerSocket(Integer.parseInt(addressParts[1]));
+            System.out.println("Node " + currentNodeAddress + ": " + "Started");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,7 +37,7 @@ public class Server extends Thread {
                 try {
                     while (true) {
                         Socket clientSocket = serverSocket.accept();
-                        new Client(currentPort, minerService, this, clientSocket).start();
+                        new Client(currentNodeAddress, minerService, this, clientSocket).start();
                     }
                 } finally {
                     serverSocket.close();
@@ -45,7 +45,7 @@ public class Server extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }, "Node " + currentPort + ": " + " Network Thread");
+        }, "Node " + currentNodeAddress + ": " + " Network Thread");
         networkThread.start();
     }
 
@@ -56,48 +56,54 @@ public class Server extends Thread {
                     sendBlock(minerService.generateBlock());
                 }
             }
-        }, "Node " + currentPort + ": " + " Mine Thread");
+        }, "Node " + currentNodeAddress + ": " + " Mine Thread");
         minerThread.start();
     }
 
     public void sendBlock(Block block) {
-        System.out.println("Node " + currentPort + ": " + "Mined block" + block);
-        for (int receiverPort : otherPorts) {
+        System.out.println("Node " + currentNodeAddress + ": " + "Mined block" + block);
+        for (String receiverAddress : otherNodesInCluster) {
+            String[] addressParts = divideAddress(receiverAddress);
             try (
-                    Socket clientSocket = new Socket(ADDRESS, receiverPort);
+                    Socket clientSocket = new Socket(addressParts[0], Integer.parseInt(addressParts[1]));
                     ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream())
             ) {
-                out.writeObject(new Request(MethodType.POST, List.of(block), currentPort, receiverPort));
+                out.writeObject(new Request(MethodType.POST, List.of(block), currentNodeAddress));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void askForChainPart(int receiverPort) {
+    public void askForChainPart(String receiverAddress) {
+        String[] addressParts = divideAddress(receiverAddress);
         try (
-                Socket clientSocket = new Socket(ADDRESS, receiverPort);
+                Socket clientSocket = new Socket(addressParts[0], Integer.parseInt(addressParts[1]));
                 ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream())
         ) {
-            out.writeObject(new Request(MethodType.GET, null, currentPort, receiverPort));
+            out.writeObject(new Request(MethodType.GET, null, currentNodeAddress));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Node " + currentPort + ": " + "Asked Node " + receiverPort + " for chain part");
+        System.out.println("Node " + currentNodeAddress + ": " + "Asked Node " + receiverAddress + " for chain part");
     }
 
-    public void sendChain(int receiverPort) {
+    public void sendChain(String receiverAddress) {
+        String[] addressParts = divideAddress(receiverAddress);
         List<Block> chain = minerService.getChain();
-        for (int port : otherPorts) {
-            try (
-                    Socket clientSocket = new Socket(ADDRESS, port);
-                    ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream())
-            ) {
-                out.writeObject(new Request(MethodType.POST, chain, currentPort, receiverPort));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try (
+                Socket clientSocket = new Socket(addressParts[0], Integer.parseInt(addressParts[1]));
+                ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream())
+        ) {
+            out.writeObject(new Request(MethodType.POST, chain, currentNodeAddress));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+
+    // Первая часть - IP-адрес, вторая часть - порт
+    private String[] divideAddress(String address) {
+        return address.split(":");
     }
 
     public MinerService getMinerService() {
