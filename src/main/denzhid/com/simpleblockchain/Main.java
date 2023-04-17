@@ -14,7 +14,7 @@ public class Main {
         secondNode.start();
         thirdNode.start();
 
-        firstNode.sendBlock();
+        firstNode.sendBlock(firstNode.getMinerService().generateGenesis());
 
         firstNode.startMine();
         secondNode.startMine();

@@ -12,13 +12,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MinerService {
     private final BlockFactory blockFactory = new BlockFactory();
     private final AtomicBoolean isLagging = new AtomicBoolean(false);
-    private int currentIndex = 1;
     private List<Block> chain = new LinkedList<>();
-    private String previousHash = null;
 
     public synchronized Block generateBlock() {
         try {
-            Block newBlock = blockFactory.generateBlock(currentIndex, previousHash);
+            if (chain.isEmpty()) {
+                return null;
+            }
+            Block previousBlock = chain.get(chain.size() - 1);
+            Block newBlock = blockFactory.generateBlock(previousBlock.index() + 1, previousBlock.hash());
+            addBlock(newBlock);
+            return newBlock;
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public synchronized Block generateGenesis() {
+        try {
+            Block newBlock = blockFactory.generateBlock(1, null);
             addBlock(newBlock);
             return newBlock;
         } catch (NoSuchAlgorithmException e) {
@@ -31,15 +43,16 @@ public class MinerService {
             addBlock(block);
             return ValidateResults.ADDED;
         }
-        if (currentIndex < block.index()) {
+
+        Block previousBlock = chain.get(chain.size() - 1);
+
+        if (previousBlock.index() < block.index()) {
             isLagging.set(true);
             return ValidateResults.NEED_CHAIN;
         }
-        if (
-                !block.previousHash().equals(previousHash)
-                        || block.index() != currentIndex
-                        || !block.hash().endsWith("0000")
-        ) {
+
+        if (!block.previousHash().equals(previousBlock.hash())
+                || !block.hash().endsWith("0000")) {
             return ValidateResults.IGNORED;
         }
 
@@ -49,12 +62,6 @@ public class MinerService {
 
     private void addBlock(Block block) {
         chain.add(block);
-        this.currentIndex++;
-        this.previousHash = block.hash();
-    }
-
-    public synchronized int getCurrentIndex() {
-        return currentIndex;
     }
 
     public synchronized boolean getIsLagging() {
