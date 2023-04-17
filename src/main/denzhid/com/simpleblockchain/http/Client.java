@@ -82,7 +82,7 @@ public class Client extends Thread {
             }
             clientSocket.close();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 }
