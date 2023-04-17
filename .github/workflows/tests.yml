@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  build:
+  gradle:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-2022, macos-latest ]
