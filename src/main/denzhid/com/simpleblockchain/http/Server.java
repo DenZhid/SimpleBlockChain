@@ -52,7 +52,7 @@ public class Server extends Thread {
     public void startMine() {
         Thread minerThread = new Thread(() -> {
             while (true) {
-                if (!minerService.getIsLagging() && !minerService.getChain().isEmpty()) {
+                if (!minerService.getIsLagging() && !minerService.getStopMining() && !minerService.getChain().isEmpty()) {
                     sendBlock(minerService.generateBlock());
                 }
             }

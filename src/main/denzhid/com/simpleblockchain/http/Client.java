@@ -33,6 +33,7 @@ public class Client extends Thread {
                 switch (request.getMethod()) {
 
                     case GET -> {
+                        minerService.setStopMining(true);
                         currentServer.sendChain(request.getSenderPort());
                         System.out.println("Node "
                                 + currentPort
@@ -40,11 +41,13 @@ public class Client extends Thread {
                                 + "Send chain part to Node "
                                 + request.getSenderPort()
                         );
+                        minerService.setStopMining(false);
                     }
 
                     case POST -> {
                         List<Block> body = request.getBody();
                         if (body.size() == 1) {
+                            minerService.setStopMining(true);
                             // POST BLOCK
                             Block block = body.get(0);
                             System.out.println("Node "
@@ -55,26 +58,24 @@ public class Client extends Thread {
                                     + " from Node "
                                     + request.getSenderPort());
                             switch (minerService.validateBlock(block)) {
-                                case ADDED ->
-                                        System.out.println("Node " + currentPort + ": " + "Added block: " + block);
-                                case IGNORED ->
-                                        System.out.println("Node " + currentPort + ": " + "Ignored block: " + block);
+                                case ADDED -> System.out.println("Node " + currentPort + ": " + "Added block");
+                                case IGNORED -> System.out.println("Node " + currentPort + ": " + "Ignored block");
                                 case NEED_CHAIN -> currentServer.askForChainPart(request.getSenderPort());
                             }
+                            minerService.setStopMining(false);
                             return;
                         }
 
                         // POST CHAIN_PART
+                        minerService.setStopMining(true);
                         minerService.setChain(body);
-                        System.out.println("After chain");
                         minerService.setIsLagging(false);
                         System.out.println("Node "
                                 + currentPort
                                 + ": "
-                                + "Received chain part: "
-                                + body
-                                + " from Node "
+                                + "Received chain part" + " from Node "
                                 + request.getSenderPort());
+                        minerService.setStopMining(false);
                     }
                 }
             }
