@@ -8,14 +8,12 @@ import java.util.List;
 public class Request implements Serializable {
     private final MethodType method;
     private final List<Block> body;
-    private final int senderPort;
-    private final int receiverPort;
+    private final String senderAddress;
 
-    public Request(MethodType method, List<Block> body, int senderPort, int receiverPort) {
+    public Request(MethodType method, List<Block> body, String senderAddress) {
         this.method = method;
         this.body = body;
-        this.senderPort = senderPort;
-        this.receiverPort = receiverPort;
+        this.senderAddress = senderAddress;
     }
 
     public MethodType getMethod() {
@@ -26,11 +24,7 @@ public class Request implements Serializable {
         return body;
     }
 
-    public int getSenderPort() {
-        return senderPort;
-    }
-
-    public int getReceiverPort() {
-        return receiverPort;
+    public String getSenderAddress() {
+        return senderAddress;
     }
 }

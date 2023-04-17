@@ -4,26 +4,26 @@ import main.denzhid.com.simpleblockchain.http.Server;
 
 public class Main {
     public static void main(String[] args) {
-        int port = -1;
-        int[] otherPorts = new int[]{-1, -1};
+        String currentNodeAddress = "";
+        String[] otherNodesInCluster = new String[]{"", ""};
         boolean isGenesis = false;
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
-                case "-p" -> port = Integer.parseInt(args[++i]);
+                case "-p" -> currentNodeAddress = args[++i];
                 case "-o" -> {
-                    String[] arguments = args[++i].split(",");
-                    otherPorts = new int[]{Integer.parseInt(arguments[0]), Integer.parseInt(arguments[1])};
+                    String[] addresses = args[++i].split(",");
+                    otherNodesInCluster = new String[]{addresses[0], addresses[1]};
                 }
                 case "-g" -> isGenesis = true;
             }
         }
 
-        if (port < 0 || otherPorts[0] < 0 || otherPorts[1] < 0) {
+        if (currentNodeAddress.isEmpty() || otherNodesInCluster[0].isEmpty() || otherNodesInCluster[1].isEmpty()) {
             System.out.println("Configuration hasn't been set");
             System.exit(1);
         }
 
-        Server node = new Server(port, otherPorts);
+        Server node = new Server(currentNodeAddress, otherNodesInCluster);
         node.start();
         if (isGenesis) {
             node.sendBlock(node.getMinerService().generateGenesis());
