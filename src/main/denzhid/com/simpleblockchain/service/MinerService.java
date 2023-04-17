@@ -17,14 +17,12 @@ public class MinerService {
 
     public synchronized Block generateBlock() {
         try {
-            System.out.println("Start generation");
             if (chain.isEmpty()) {
                 return null;
             }
             Block previousBlock = chain.get(chain.size() - 1);
             Block newBlock = blockFactory.generateBlock(previousBlock.index() + 1, previousBlock.hash());
             addBlock(newBlock);
-            System.out.println("End generation");
             return newBlock;
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
