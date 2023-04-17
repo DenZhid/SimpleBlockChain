@@ -5,23 +5,26 @@ import main.denzhid.com.simpleblockchain.model.block.BlockFactory;
 import main.denzhid.com.simpleblockchain.service.utils.ValidateResults;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MinerService {
     private final BlockFactory blockFactory = new BlockFactory();
     private final AtomicBoolean isLagging = new AtomicBoolean(false);
-    private List<Block> chain = new LinkedList<>();
+    private final AtomicBoolean stopMining = new AtomicBoolean(false);
+    private List<Block> chain = new CopyOnWriteArrayList<>();
 
     public synchronized Block generateBlock() {
         try {
+            System.out.println("Start generation");
             if (chain.isEmpty()) {
                 return null;
             }
             Block previousBlock = chain.get(chain.size() - 1);
             Block newBlock = blockFactory.generateBlock(previousBlock.index() + 1, previousBlock.hash());
             addBlock(newBlock);
+            System.out.println("End generation");
             return newBlock;
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
@@ -47,6 +50,9 @@ public class MinerService {
         Block previousBlock = chain.get(chain.size() - 1);
 
         if (previousBlock.index() < block.index()) {
+            if (isLagging.get()) {
+                return ValidateResults.IGNORED;
+            }
             isLagging.set(true);
             return ValidateResults.NEED_CHAIN;
         }
@@ -68,6 +74,10 @@ public class MinerService {
         return isLagging.get();
     }
 
+    public synchronized boolean getStopMining() {
+        return stopMining.get();
+    }
+
     public synchronized List<Block> getChain() {
         return chain;
     }
@@ -76,7 +86,11 @@ public class MinerService {
         this.isLagging.set(isLagging);
     }
 
-    public synchronized void setChain(List<Block> chain) {
-        this.chain = chain;
+    public synchronized void setStopMining(boolean stopMining) {
+         this.stopMining.set(stopMining);
+    }
+
+    public synchronized  void setChain(List<Block> chain) {
+        this.chain = new CopyOnWriteArrayList<>(chain);
     }
 }
