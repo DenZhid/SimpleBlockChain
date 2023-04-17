@@ -1,5 +1,7 @@
 package main.denzhid.com.simpleblockchain;
 
+import main.denzhid.com.simpleblockchain.http.Server;
+
 public class Main {
     public static void main(String[] args) {
         int[] hostsMock = {3000, 3001, 3002};

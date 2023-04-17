@@ -9,7 +9,7 @@ public class BlockFactory {
     private static final Random RANDOMIZER = new Random();
     private static final String ALGORITHM = "SHA-256";
 
-    public Block generateBlock(long index, String previousHash) throws NoSuchAlgorithmException {
+    public Block generateBlock(int index, String previousHash) throws NoSuchAlgorithmException {
         long nonce = 0L;
         String data = generateRandomString();
 
