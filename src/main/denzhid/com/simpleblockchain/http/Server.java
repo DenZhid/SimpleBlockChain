@@ -52,16 +52,15 @@ public class Server extends Thread {
     public void startMine() {
         Thread minerThread = new Thread(() -> {
             while (true) {
-                if (!minerService.getIsLagging() && minerService.getCurrentIndex() != 1) {
-                    sendBlock();
+                if (!minerService.getIsLagging() && !minerService.getChain().isEmpty()) {
+                    sendBlock(minerService.generateBlock());
                 }
             }
         }, "Node " + currentPort + ": " + " Mine Thread");
         minerThread.start();
     }
 
-    public void sendBlock() {
-        Block block = minerService.generateBlock();
+    public void sendBlock(Block block) {
         System.out.println("Node " + currentPort + ": " + "Mined block" + block);
         for (int receiverPort : otherPorts) {
             try (
@@ -99,5 +98,9 @@ public class Server extends Thread {
                 e.printStackTrace();
             }
         }
+    }
+
+    public MinerService getMinerService() {
+        return minerService;
     }
 }

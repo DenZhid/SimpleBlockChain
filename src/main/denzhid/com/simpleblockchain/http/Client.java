@@ -66,6 +66,7 @@ public class Client extends Thread {
 
                         // POST CHAIN_PART
                         minerService.setChain(body);
+                        System.out.println("After chain");
                         minerService.setIsLagging(false);
                         System.out.println("Node "
                                 + currentPort
