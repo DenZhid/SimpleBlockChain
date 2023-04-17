@@ -26,7 +26,7 @@ public class Server extends Thread {
             this.serverSocket = new ServerSocket(Integer.parseInt(addressParts[1]));
             System.out.println("Node " + currentNodeAddress + ": " + "Started");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -43,21 +43,18 @@ public class Server extends Thread {
                     serverSocket.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }, "Node " + currentNodeAddress + ": " + " Network Thread");
         networkThread.start();
     }
 
     public void startMine() {
-        Thread minerThread = new Thread(() -> {
-            while (true) {
-                if (!minerService.getIsLagging() && !minerService.getStopMining() && !minerService.getChain().isEmpty()) {
-                    sendBlock(minerService.generateBlock());
-                }
+        while (true) {
+            if (!minerService.getIsLagging() && !minerService.getStopMining() && !minerService.getChain().isEmpty()) {
+                sendBlock(minerService.generateBlock());
             }
-        }, "Node " + currentNodeAddress + ": " + " Mine Thread");
-        minerThread.start();
+        }
     }
 
     public void sendBlock(Block block) {
@@ -70,7 +67,7 @@ public class Server extends Thread {
             ) {
                 out.writeObject(new Request(MethodType.POST, List.of(block), currentNodeAddress));
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
     }

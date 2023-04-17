@@ -24,21 +24,10 @@ class MinerServiceTest {
     }
 
     @Test
-    void generateBlockWithoutGenesis() {
-        assertNull(minerService.generateBlock());
-    }
-
-    @Test
     void generateGenesis() {
-        Block genesis = minerService.generateGenesis();
         List<Block> chain = minerService.getChain();
-        minerService.generateGenesis();
 
         Block gensisBlock = chain.get(0);
-
-        // Chain test
-        assertFalse(chain.isEmpty());
-        assertEquals(genesis, gensisBlock);
 
         // GenesisBlock test
         assertNotNull(gensisBlock);

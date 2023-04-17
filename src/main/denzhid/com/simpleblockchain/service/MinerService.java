@@ -15,6 +15,15 @@ public class MinerService {
     private final AtomicBoolean stopMining = new AtomicBoolean(false);
     private List<Block> chain = new CopyOnWriteArrayList<>();
 
+    public MinerService() {
+        Block first = new Block(1,
+                null,
+                "initialData",
+                "131412f39658375c668a0b8c0f97a2d17f928dfa82d8d4968216981833ef0000",
+                0);
+        chain.add(first);
+    }
+
     public synchronized Block generateBlock() {
         try {
             if (chain.isEmpty()) {
@@ -85,10 +94,10 @@ public class MinerService {
     }
 
     public synchronized void setStopMining(boolean stopMining) {
-         this.stopMining.set(stopMining);
+        this.stopMining.set(stopMining);
     }
 
-    public synchronized  void setChain(List<Block> chain) {
+    public synchronized void setChain(List<Block> chain) {
         this.chain = new CopyOnWriteArrayList<>(chain);
     }
 }
