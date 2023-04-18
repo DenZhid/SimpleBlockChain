@@ -4,7 +4,7 @@ services:
     image: denzhid/simpleblockchain
     container_name: firstNode
     network_mode: host
-    command: java -jar /simpleblockchain/build/libs/SimpleBlockChain-1.0.jar
+    command: java -jar /simpleblockchain/build/libs/simpleblockchain-1.0.jar
     environment:
       CURRENT_NODE_ADDRESS: 127.0.0.1:3000
       NODES_IN_CLUSTER_ADDRESSES: 127.0.0.1:3001,127.0.0.1:3002
@@ -14,7 +14,7 @@ services:
     image: denzhid/simpleblockchain
     container_name: secondNode
     network_mode: host
-    command: java -jar /simpleblockchain/build/libs/SimpleBlockChain-1.0.jar
+    command: java -jar /simpleblockchain/build/libs/simpleblockchain-1.0.jar
     environment:
       CURRENT_NODE_ADDRESS: 127.0.0.1:3001
       NODES_IN_CLUSTER_ADDRESSES: 127.0.0.1:3000,127.0.0.1:3002
@@ -27,7 +27,7 @@ services:
     image: denzhid/simpleblockchain
     container_name: thirdNode
     network_mode: host
-    command: java -jar /simpleblockchain/build/libs/SimpleBlockChain-1.0.jar
+    command: java -jar /simpleblockchain/build/libs/simpleblockchain-1.0.jar
     environment:
       CURRENT_NODE_ADDRESS: 127.0.0.1:3002
       NODES_IN_CLUSTER_ADDRESSES: 127.0.0.1:3000,127.0.0.1:3001
